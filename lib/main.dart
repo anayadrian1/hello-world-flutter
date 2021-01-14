@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hello_world_flutter/viewmodel/MainViewModel.dart';
 
 void main() {
   runApp(MyApp());
@@ -9,7 +10,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Flutter Counter Demo',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -51,19 +52,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-  bool _running = false;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
+  bool _running = false;
+  MainViewModel _viewModel = MainViewModel();
 
   void _toggleRunning() {
     setState(() {
@@ -85,12 +76,22 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
         actions: <Widget>[
-          IconButton(icon: const Icon(Icons.replay), onPressed: null),
+          IconButton(
+              icon: const Icon(Icons.replay, color: Colors.white),
+              onPressed: null),
           (_running)
               ? IconButton(
                   icon: const Icon(Icons.pause), onPressed: _toggleRunning)
               : IconButton(
-                  icon: const Icon(Icons.play_arrow), onPressed: _toggleRunning)
+                  icon: const Icon(Icons.play_arrow),
+                  onPressed: _toggleRunning),
+          IconButton(
+            icon: Icon(
+              Icons.skip_next,
+              color: Colors.white,
+            ),
+            onPressed: _viewModel.iterate(),
+          )
         ],
       ),
       body: Center(
@@ -113,21 +114,18 @@ class _MyHomePageState extends State<MyHomePage> {
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
+            StreamBuilder<int>(
+              stream: _viewModel.iterationCountStream,
+              builder: (context, snapshot) {
+                return Text('Iterations: ${snapshot.data}');
+              },
             ),
             Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
+              'You have pushed the button this many times:',
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

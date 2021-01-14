@@ -29,6 +29,8 @@ class Terrain {
   Terrain(int size, double density, Random rng) : _size = size {
     _cells = List.generate(size, (i) => Uint8ClampedList(size));
     _next = List.generate(size, (i) => Uint8ClampedList(size));
+    _population = 0;
+    _iterationCount = 0;
     for (var row in _cells) {
       for (var colIndex = 0; colIndex < row.length; colIndex++) {
         if (rng.nextDouble() < density) {
